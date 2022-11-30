@@ -8,7 +8,7 @@ import axios from "axios";
 // } from "../actions";
 
 const instance = axios.create({
-    baseURL: "http://localhost:3001"
+    baseURL: process.env.NEXT_PUBLIC_API_HOST
 });
 instance.defaults.headers.post["Content-Type"] = "application/json";
 instance.defaults.headers.post["Content-Method"] = 'API';
