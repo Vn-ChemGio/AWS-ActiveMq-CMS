@@ -17,6 +17,8 @@ import {
 } from '@mui/material';
 import { getInitials } from '../../utils/get-initials';
 import BrokerActionPopover from "../broker-action-popover";
+import Link from "next/link";
+import NextLink from "next/link";
 
 export const BrokerListResults = ( { brokers, reloadData, ...rest } ) => {
     const [ selectedCustomerIds, setSelectedCustomerIds ] = useState( [] );
@@ -131,12 +133,22 @@ export const BrokerListResults = ( { brokers, reloadData, ...rest } ) => {
                                             >
                                                 { getInitials( broker.BrokerName ) }
                                             </Avatar>
-                                            <Typography
-                                                color="textPrimary"
-                                                variant="body1"
+                                            <NextLink
+                                                href={`/brokers/${broker.BrokerId}/users`}
+                                                passHref
                                             >
-                                                { broker.BrokerName }
-                                            </Typography>
+                                                <Link
+                                                    to={`/brokers/${broker.BrokerId}/users`}
+                                                    color="textPrimary"
+                                                    variant="body1"
+                                                    underline="hover"
+                                                    sx={{
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    { broker.BrokerName }
+                                                </Link>
+                                            </NextLink>
                                         </Box>
                                     </TableCell>
                                     <TableCell>

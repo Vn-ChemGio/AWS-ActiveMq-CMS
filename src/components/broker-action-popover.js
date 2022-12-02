@@ -5,12 +5,13 @@ import { Alert, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
 import ReplayIcon from "@mui/icons-material/Replay";
+import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "../utils/axios";
 
-const BrokerActionPopover = ( {broker, reloadData} ) => {
-    const [ anchorEl, setAnchorEl ] = React.useState( null );
-    const [ openSnackBarSuccess, setOpenSnackBarSuccess ] = React.useState( false );
-    const [ openSnackBarError, setOpenSnackBarError ] = React.useState( false );
+const BrokerActionPopover = ( { broker, reloadData } ) => {
+    const [ anchorEl, setAnchorEl ]                         = React.useState( null );
+    const [ openSnackBarSuccess, setOpenSnackBarSuccess ]   = React.useState( false );
+    const [ openSnackBarError, setOpenSnackBarError ]       = React.useState( false );
     const [ openSnackBarErrorMSG, setOpenSnackBarErrorMSG ] = React.useState( "" );
     
     const handleClick = ( event ) => {
@@ -23,20 +24,36 @@ const BrokerActionPopover = ( {broker, reloadData} ) => {
     
     const handleReboot = async () => {
         try {
-            let data = await axios.patch( `/aws-active-mq/${broker.BrokerId}` );
-            console.log(data)
-            setOpenSnackBarSuccess(true)
+            let data = await axios.patch( `/amazon-mq/${ broker.BrokerId }` );
+            console.log( data )
+            setOpenSnackBarSuccess( true )
             reloadData()
-        }catch ( e ) {
-            setOpenSnackBarErrorMSG(e.response.data.error)
-        
-            setOpenSnackBarError(true)
+        } catch ( e ) {
+            setOpenSnackBarErrorMSG( e.response.data.error )
+            
+            setOpenSnackBarError( true )
         }
-       
-        
     }
-    const open = Boolean( anchorEl );
-    const id   = open ? 'simple-popover' : undefined;
+    
+    const handleDelete = async () => {
+        let confirmBox = confirm("Are you sure!\nEither OK or Cancel.");
+        if(!confirmBox)
+            return;
+    
+    
+        try {
+            let data = await axios.delete( `/amazon-mq/${ broker.BrokerId }` );
+            console.log( data )
+            setOpenSnackBarSuccess( true )
+            reloadData()
+        } catch ( e ) {
+            setOpenSnackBarErrorMSG( e.response.data.error )
+        
+            setOpenSnackBarError( true )
+        }
+    }
+    const open         = Boolean( anchorEl );
+    const id           = open ? 'simple-popover' : undefined;
     
     return (
         <div>
@@ -60,7 +77,7 @@ const BrokerActionPopover = ( {broker, reloadData} ) => {
             >
                 <ListItem disablePadding>
                     <ListItemButton component="a"
-                                    href="#simple-list"
+                                    href={ `/brokers/${ broker.BrokerId }/users` }
                     >
                         <ListItemIcon>
                             <PersonIcon/>
@@ -69,8 +86,8 @@ const BrokerActionPopover = ( {broker, reloadData} ) => {
                         <ListItemText primary="User"/>
                     </ListItemButton>
                 </ListItem>
-                <ListItem disablePadding 
-                          onClick={handleReboot}
+                <ListItem disablePadding
+                          onClick={ handleReboot }
                 >
                     <ListItemButton component="a"
                                     href="#simple-list"
@@ -82,34 +99,48 @@ const BrokerActionPopover = ( {broker, reloadData} ) => {
                     
                     </ListItemButton>
                 </ListItem>
+                <ListItem disablePadding
+                          onClick={ handleDelete }
+                >
+                    <ListItemButton component="a"
+                                    href="#simple-list"
+                    >
+                        <ListItemIcon>
+                            <DeleteIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="Remove"/>
+                    
+                    </ListItemButton>
+                </ListItem>
+            
             </Popover>
-    
-         
+            
+            
             <Snackbar
-                open={openSnackBarSuccess}
-                autoHideDuration={6000}
-                anchorOrigin={{vertical:"top", horizontal:"right"}}
+                open={ openSnackBarSuccess }
+                autoHideDuration={ 6000 }
+                anchorOrigin={ { vertical: "top", horizontal: "right" } }
             >
-                <Alert onClose={handleClose} 
+                <Alert onClose={ handleClose }
                        severity="success"
-                       sx={{ width: '100%' }}
+                       sx={ { width: '100%' } }
                 >
                     Rebooting!
                 </Alert>
             </Snackbar>
             <Snackbar
-                open={openSnackBarError}
-                autoHideDuration={6000}
-                anchorOrigin={{vertical:"top", horizontal:"right"}}
+                open={ openSnackBarError }
+                autoHideDuration={ 6000 }
+                anchorOrigin={ { vertical: "top", horizontal: "right" } }
             >
-                <Alert onClose={handleClose}
+                <Alert onClose={ handleClose }
                        severity="error"
-                       sx={{ width: '100%' }}
+                       sx={ { width: '100%' } }
                 >
-                    {openSnackBarErrorMSG}
+                    { openSnackBarErrorMSG }
                 </Alert>
             </Snackbar>
-            
+        
         </div>
     );
 };
